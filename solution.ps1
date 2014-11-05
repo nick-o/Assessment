@@ -3,12 +3,13 @@
 # NAME:		solution.ps1
 # AUTHOR:	Gabriel Brussa
 # DATE:		03/Nov/2014
+# VERSION:	0.0.3 on 04/Nov/2014
 # ------------------------------------------------------------------------
 
 #Define parameters
 	#URL to gather the file from
 set-variable -name getfrom -value "https://gist.githubusercontent.com/nick-o/fb83168225b53421c353/raw/3740ea8de88fb6ab37ba4d979ef3b3488c373456/PoSh.txt" -visibility private
-#set-variable -name getfrom -value "http://followup.netposible.com/powershell.txt" -visibility private
+#set-variable -name getfrom -value "https://gist.githubusercontent.com/nick-o/fb83168225b53421c353/raw/53bedf835024ee6761f519d5d0b7381d3fd07601/PoSh.txt" -visibility private
 
 	#Filename to use
 set-variable -name savefile -value "PoShText.txt" -visibility private
@@ -16,7 +17,7 @@ set-variable -name savefile -value "PoShText.txt" -visibility private
 	#Line to fetch a word from
 set-variable -name parseline -value 9 -visibility private	
 
-	#Word from line to be fetched a word from
+	#Word from line to be fetched
 set-variable -name parseword -value 9 -visibility private	
 
 
@@ -24,10 +25,12 @@ set-variable -name parseword -value 9 -visibility private
 
 function getfile($uri) {
 	try {
-		#(new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1")
+		#Create Webclient object
 		$webClient = New-Object System.Net.Webclient
+		#Use the Webclient to download the provided URI
 		$webClient.DownloadString($uri)
 	} catch {
+		#In case of error show message and halt execution, can't continue.
 		Write-Output "Error occurred while downloading file. " $_.Exception.Message
 		exit
 	}
@@ -35,8 +38,10 @@ function getfile($uri) {
 
 function savefile($file, $data){
 	try {
+		#Save the file with the filename and data provided
 		out-file -FilePath $file -inputobject $data
 	} catch {
+		#In case of error show message and halt execution, can't continue.
 		Write-Output "Error occurred while saving file. " $_.Exception.Message
 		exit
 	}
@@ -44,8 +49,10 @@ function savefile($file, $data){
 
 function loadfile($file){
 	try {
+		#Load the filename provided as parameter
 		Get-Content -path $file
 	} catch {
+		#In case of error show message and halt execution, can't continue.
 		Write-Output "Error occurred while loading file. " $_.Exception.Message
 		exit
 	}
@@ -95,6 +102,12 @@ function getstatchars($data){
 	$data | Group-Object $_ | Select-Object Name, Count | Where-Object {$_.Name -ne ' '}  | Sort-Object -Property Count -Descending | Select-Object -First 10
 }
 
+function splittoarray($data){
+	#Split the string into an array using the breaklines as delimiter, return the output
+	$data = $data.Split("`n")
+	$data
+}
+
 #Execute!
 	#Let's grab the file - Requirement 3.i
 	$data = getfile $getfrom
@@ -103,7 +116,10 @@ function getstatchars($data){
 	savefile $savefile $data
 	
 	#let's load it as an array now - Requirement 3.ii (the data it's already in $data var, however as string and we rather use it as array)
-	$filecontent = loadfile($savefile)
+	#$filecontent = loadfile($savefile)
+	#added on 0.0.3 - split downloaded data into array to avoid the reload, comment line above and uncomment below to use function
+	$filecontent = splittoarray($data)
+	
 
 	#get lines, words and characters - Requirement 3.iii
 	#first, let's get the lines from the array length (measure-object will NOT count blank lines!)
@@ -119,7 +135,7 @@ function getstatchars($data){
 	try {
 		Write-Output "The word '$($parseword)' in line '$($parseline)', reversed is: '$(reverseword(gatherword $filecontent $parseline $parseword))'"
 	} catch {
-		Write-Output "The word '$($parseword)' in line '$($parseline)' could not be reversed due to error"
+		Write-Output "The word '$($parseword)' in line '$($parseline)' could not be reversed due to error. It might not exist."
 	}
 	
 	
