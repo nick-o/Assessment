@@ -3,6 +3,9 @@ Assessment CHANGELOG
 
 This file is used to list changes made in each version of the Assessment.
 
+0.0.4
+-----
+- [Gabriel Brussa] - Reverted 'splittoarray' to comply with original request.
 
 0.0.3
 -----

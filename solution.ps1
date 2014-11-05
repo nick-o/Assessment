@@ -3,7 +3,7 @@
 # NAME:		solution.ps1
 # AUTHOR:	Gabriel Brussa
 # DATE:		03/Nov/2014
-# VERSION:	0.0.3 on 04/Nov/2014
+# VERSION:	0.0.4 on 04/Nov/2014
 # ------------------------------------------------------------------------
 
 #Define parameters
@@ -116,9 +116,9 @@ function splittoarray($data){
 	savefile $savefile $data
 	
 	#let's load it as an array now - Requirement 3.ii (the data it's already in $data var, however as string and we rather use it as array)
-	#$filecontent = loadfile($savefile)
+	$filecontent = loadfile($savefile)
 	#added on 0.0.3 - split downloaded data into array to avoid the reload, comment line above and uncomment below to use function
-	$filecontent = splittoarray($data)
+	#$filecontent = splittoarray($data)
 	
 
 	#get lines, words and characters - Requirement 3.iii
